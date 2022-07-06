@@ -124,7 +124,7 @@ namespace ExchangeRate_Infrastructure.Services
         {
             if (!string.IsNullOrEmpty(filter?.UserId))
             {
-                queryable = queryable.Where(x => x.UserId == filter.UserId && x.DateProcessed >= DateTime.Now.AddMinutes(-60));
+                queryable = queryable.Where(x => x.UserId == filter.UserId);
             }
 
             return queryable;
@@ -145,6 +145,21 @@ namespace ExchangeRate_Infrastructure.Services
 
                 throw;
             }
+        }
+
+        public async Task<bool> insertTrade(Trade trade)
+        {
+            await _dataContext.Trades.AddAsync(trade);
+
+            var created = await _dataContext.SaveChangesAsync();
+            return created > 0;
+        }
+
+        public async  Task<Trade> GetTradeByIdAsync(Guid tradeId)
+        {
+            return await _dataContext.Trades
+            
+             .SingleOrDefaultAsync(x => x.Id == tradeId);
         }
     }
 }

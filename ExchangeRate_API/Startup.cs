@@ -48,7 +48,7 @@ namespace ExchangeRate_API
         {
             new RateLimitRule
             {
-                Endpoint = "GET:/api/v1/exchangerate/getlatestrate",
+                Endpoint = "POST:/api/v1/exchangerate/exchangeratetrade",
                 Period = "3600s",
                 Limit = 10,
             }

@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using ExchangeRate_API.Helpers;
+using System.Linq;
 
 namespace ExchangeRate_API.Controllers
 {
@@ -70,8 +71,63 @@ namespace ExchangeRate_API.Controllers
             }
         }
 
-       [HttpGet(ApiRoutes.ExchangeRate.GetUsedExchangeRate)]
-        [Cached(120)]
+        [HttpPost(ApiRoutes.ExchangeRate.ExchangeRateTrade)]
+    
+        public async Task<IActionResult> ExchangeRateTrade([FromBody] TradeRequest tradeRequest)
+        {
+            try
+            {
+                var newRadeId = Guid.NewGuid();
+                ExchangeRateRequest exchangeRateRequest = new ExchangeRateRequest
+                {
+                    Base = tradeRequest.BaseCurrency,
+                    Symbol = tradeRequest.TargetCurrency
+                };
+                var userId = HttpContext.GetUserId();   
+                var getrate = await _exchangeRateService.GetLatestExchangeRate(exchangeRateRequest, userId);
+                var rate = getrate.ConversionRates.Values.FirstOrDefault();
+                var convertedRate = rate * tradeRequest.Amount;
+                var trade = new Trade
+                {
+                    Id = newRadeId,
+                    Amount = tradeRequest.Amount,
+                    UserId = HttpContext.GetUserId(),
+                    BaseCurrency = tradeRequest.BaseCurrency,
+                    TargetCurrency = tradeRequest.TargetCurrency,
+                    ConversionRate = convertedRate,
+                    Dateprocesed = DateTime.Now,   
+                };
+               
+                await _exchangeRateService.insertTrade(trade);
+
+                var locationUri = _uriService.GetTradeUri(trade.Id.ToString());
+
+              
+                return Created(locationUri, new Response<TradeResponse>(_mapper.Map<TradeResponse>(trade)));
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest(ex.Message);
+
+            }
+
+        }
+
+        [HttpGet(ApiRoutes.ExchangeRate.Get)]
+        [Cached(1800)]
+        public async Task<IActionResult> Get([FromRoute] Guid tradeId)
+        {
+            var trade = await _exchangeRateService.GetTradeByIdAsync(tradeId);
+
+            if (trade == null)
+                return NotFound();
+
+            return Ok(new Response<TradeResponse>(_mapper.Map<TradeResponse>(trade)));
+        }
+        [HttpGet(ApiRoutes.ExchangeRate.GetUsedExchangeRate)]
+     
         public async Task<IActionResult> GetUsedExchangeRate([FromQuery] GetAllExchangeRateQuery query, [FromQuery] PaginationQuery paginationQuery)
         {
             try

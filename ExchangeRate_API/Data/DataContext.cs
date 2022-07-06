@@ -19,6 +19,7 @@ namespace ExchangeRate_API.Data
         }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<ExchangeRate> ExchangeRates { get; set; }
+        public DbSet<Trade> Trades { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

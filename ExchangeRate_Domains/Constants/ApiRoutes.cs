@@ -26,6 +26,9 @@ namespace ExchangeRate_Domains.Constants
         {
             public const string GetLatestRate = Base + "/exchangerate/getlatestrate";
             public const string GetUsedExchangeRate = Base + "/exchangerate/getusedexchangerate";
+            public const string ExchangeRateTrade = Base + "/exchangerate/exchangeratetrade";
+            public const string Get = Base + "/exchangerate/{tradeId}";
+    
         }
     }
 }

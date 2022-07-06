@@ -1,4 +1,5 @@
 ﻿using ExchangeRate_Application.Interface;
+using ExchangeRate_Domains.Constants;
 using ExchangeRate_Domains.Models.Query;
 using Microsoft.AspNetCore.WebUtilities;
 using System;
@@ -31,6 +32,11 @@ namespace ExchangeRate_Infrastructure.Services
 
             return new Uri(modifiedUri);
 
+        }
+
+        public Uri GetTradeUri(string tradeId)
+        {
+            return new Uri(_baseUri + ApiRoutes.ExchangeRate.Get.Replace("{tradeId}", tradeId));
         }
     }
 }

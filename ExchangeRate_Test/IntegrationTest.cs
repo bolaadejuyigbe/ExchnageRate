@@ -54,12 +54,15 @@ namespace ExchangeRate_Test
             TestClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", await GetJwtAsync());
         }
 
-        protected async Task<ExchangeRateresponse> GetLatestExchangeRateAsync(ExchangeRateRequest request)
+        protected async Task<TradeResponse> CreateExchangeRateAsync(TradeRequest request)
         {
-            var response = await TestClient.GetAsync(ApiRoutes.ExchangeRate.GetLatestRate + $"?base={request.Base}&symbols={request.Symbol}");
-
-            return (await response.Content.ReadAsAsync<Response<ExchangeRateresponse>>()).Data;
+            {
+                var response = await TestClient.PostAsJsonAsync(ApiRoutes.ExchangeRate.ExchangeRateTrade, request);
+                return (await response.Content.ReadAsAsync<Response<TradeResponse>>()).Data;
+            }
         }
+
+
 
         private async Task<string> GetJwtAsync()
         {

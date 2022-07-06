@@ -10,5 +10,7 @@ namespace ExchangeRate_Application.Interface
     public interface IUriService
     {
         Uri GetAllExchangeRateUri(PaginationQuery pagination = null);
+        Uri GetTradeUri(string tradeId);
+
     }
 }

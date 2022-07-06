@@ -13,6 +13,8 @@ namespace ExchangeRate_Application.Interface
     {
         Task<ExchangeRateresponse> GetLatestExchangeRate(ExchangeRateRequest exchangeRateRequest, string UserId);
         Task<bool> insertExchangeRate( ExchangeRate exchangeRate);
+        Task<bool> insertTrade(Trade trade);
+        Task<Trade> GetTradeByIdAsync(Guid tradeId);
         Task<List<ExchangeRate>> GetAllExchangeRatebyUseridAsync(GetallExchangeRateFilter filter = null, PaginationFilter paginationFilter = null);
     
     }

@@ -1,5 +1,6 @@
 ﻿using ExchangeRate_Domains.Constants;
 using ExchangeRate_Domains.Models;
+using ExchangeRate_Domains.Models.Request;
 using ExchangeRate_Domains.Models.Response;
 using FluentAssertions;
 using System;
@@ -28,5 +29,29 @@ namespace ExchangeRate_Test
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             (await response.Content.ReadAsAsync<PagedResponse<ExchangeRateresponse>>()).Data.Should().BeEmpty();
         }
-    }
+
+        [Fact]
+        public async Task Get_ReturnsPost_WhenPostExistsInTheDatabase()
+        {
+            // Arrange
+            await AuthenticateAsync();
+            var createdTrade = await CreateExchangeRateAsync (new TradeRequest
+            {
+
+                TargetCurrency = "EUR",
+                BaseCurrency = "USD",
+                Amount = 5
+               
+            });
+
+            // Act
+            var response = await TestClient.GetAsync(ApiRoutes.ExchangeRate.Get.Replace("{tradeId}", createdTrade.Id.ToString()));
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var returnedPost = await response.Content.ReadAsAsync<Response<TradeResponse>>();
+            returnedPost.Data.Id.Should().Be(createdTrade.Id);
+
+            }
+        }
 }
